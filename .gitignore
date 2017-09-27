@@ -16,3 +16,6 @@ bin/*
 # RVM
 .rvmrc
 .ruby-*
+
+# Test Kitchen
+.kitchen/*
