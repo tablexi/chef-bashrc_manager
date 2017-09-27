@@ -55,9 +55,6 @@ jobs:
       - checkout
       - *restore_bundle
       - *install_bundle
-      - add-ssh-keys:
-          fingerprints:
-            - "20:16:b9:4b:09:15:74:d5:8d:9c:1e:b2:33:47:9c:1c"
       - run:
           name: setup git for push
           command: |
