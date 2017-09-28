@@ -1,0 +1,6 @@
+# Managed by Chef.  Local changes will be overwritten.
+# To manually add resources to the bashrc, create a file in the ~/.bashrc.d folder and add your changes there.
+
+for file in ~/.bashrc.d/* ; do
+  source ${file}
+done

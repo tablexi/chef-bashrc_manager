@@ -9,10 +9,12 @@ Berksfile.lock
 /cookbooks
 
 # Bundler
-Gemfile.lock
 bin/*
 .bundle/*
 
 # RVM
 .rvmrc
 .ruby-*
+
+# Test Kitchen
+.kitchen/*
