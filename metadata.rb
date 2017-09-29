@@ -4,7 +4,7 @@ maintainer_email 'sysadmins@tablexi.com'
 license 'MIT'
 description 'Installs/Configures .bashrc file/s'
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version IO.read(File.join(File.dirname(__FILE__), 'VERSION'))
+version '1.0.1'
 issues_url 'https://github.com/tablexi/chef-bashrc_manager/issues'
 source_url 'https://github.com/tablexi/chef-bashrc_manager'
 
