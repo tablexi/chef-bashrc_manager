@@ -7,6 +7,13 @@ describe 'test::bashrc_manager' do
     ChefSpec::ServerRunner.new(step_into: ['bashrc_manager'])
   end
 
+  let(:test1_content) do
+    <<-TXT
+# Managed by Chef.  Local changes will be overwritten.
+test1
+    TXT
+  end
+
   before do
     pw_user = EtcPwnam.new
     pw_user.name = 'test_user'
@@ -20,12 +27,14 @@ describe 'test::bashrc_manager' do
   end
 
   context 'action create' do
+    before do
+      allow(File).to receive(:exist?).and_call_original
+      allow(IO).to receive(:read).and_call_original
+    end
+
     context 'init' do
       context 'default' do
         before do
-          allow(File).to receive(:exist?).and_call_original
-          allow(IO).to receive(:read).and_call_original
-
           allow(File).to receive(:exist?).with('/home/test_user/.bashrc').and_return(true)
           allow(File).to receive(:exist?).with('/home/test_user/.bashrc.d/init').and_return(false)
           allow(IO).to receive(:read).with('/home/test_user/.bashrc').and_return('')
@@ -67,10 +76,27 @@ describe 'test::bashrc_manager' do
 
       it 'append chef warning to .bashrc.d/test1 file' do
         expect(chef_run).to render_file('/home/test_user/.bashrc.d/test1')
-          .with_content <<-TXT
-# Managed by Chef.  Local changes will be overwritten.
-test1
-          TXT
+          .with_content(test1_content)
+      end
+
+      it 'not log warning' do
+        expect(chef_run).not_to write_log('bashrc_manager_test1')
+      end
+    end
+
+    context 'log' do
+      before do
+        allow(File).to receive(:exist?).with('/home/test_user/.bashrc').and_return(true)
+        allow(File).to receive(:exist?).with('/home/test_user/.bashrc.d/init').and_return(true)
+        allow(IO).to receive(:read).with('/home/test_user/.bashrc').and_return('')
+        allow(IO).to receive(:read)
+          .with('/home/test_user/.bashrc.d/init')
+          .and_return(test1_content)
+        chef_run.converge described_recipe
+      end
+
+      it 'warning' do
+        expect(chef_run).to write_log('bashrc_manager_test1').with(level: :warn)
       end
     end
   end
