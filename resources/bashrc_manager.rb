@@ -9,20 +9,28 @@ default_action :add
 action_class do
   require 'etc'
 
-  def group_gid
-    Etc.getpwnam(new_resource.user).gid
-  end
-
-  def initial_config?
-    ::File.directory?(bashrc_d)
+  def bashrc
+    ::File.join(::Dir.home(new_resource.user), '.bashrc')
   end
 
   def bashrc_d
     ::File.join(::Dir.home(new_resource.user), '.bashrc.d')
   end
 
-  def bashrc
-    ::File.join(::Dir.home(new_resource.user), '.bashrc')
+  def bashrc_init
+    ::File.join(bashrc_d, 'init')
+  end
+
+  def duplicate_content?(filename)
+    return ::IO.read(filename).downcase.include?(new_resource.content) if ::File.exist? filename
+  end
+
+  def group_gid
+    Etc.getpwnam(new_resource.user).gid
+  end
+
+  def initial_config?
+    ::File.directory?(bashrc_d)
   end
 end
 
@@ -33,14 +41,14 @@ action :add do # rubocop:disable Metrics/BlockLength
     mode 0o755
   end
 
-  file ::File.join(bashrc_d, 'init') do
-    if ::File.exist?(::File.join(bashrc))
-      content ::IO.read(::File.join(bashrc))
+  file bashrc_init do
+    if ::File.exist?(bashrc)
+      content ::IO.read(bashrc)
     else
       action :touch
     end
     mode 0o444
-    not_if { ::File.exist?(::File.join(bashrc_d, 'init')) }
+    not_if { ::File.exist?(bashrc_init) }
   end
 
   cookbook_file bashrc do
@@ -59,6 +67,12 @@ action :add do # rubocop:disable Metrics/BlockLength
     owner new_resource.user
     group group_gid
     mode 0o644
+  end
+
+  log "bashrc_manager_#{new_resource.filename}" do
+    level :warn
+    message "bashrc_manager: #{new_resource.filename} adds duplicate content."
+    only_if { duplicate_content?(bashrc) || duplicate_content?(bashrc_init) }
   end
 end
 
