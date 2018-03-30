@@ -1,20 +1,32 @@
-.vagrant
-Berksfile.lock
+.rake_test_cache
+
+.chef/*.pem
+.chef/*.rb
+
+.DS_Store
 *~
-*#
-.#*
-\#*#
-.*.sw[a-z]
-*.un~
-/cookbooks
+client-config/*.pem
+client-config/*.rb
 
-# Bundler
-bin/*
-.bundle/*
-
-# RVM
 .rvmrc
-.ruby-*
+.ruby-gemset
 
-# Test Kitchen
-.kitchen/*
+.bundle
+.cache
+.kitchen
+
+tmp/*
+
+Vagrantfile
+tests/*
+.vagrant
+
+.berkshelf/*
+Berksfile.lock
+.chef/syntax_check_cache/*
+
+# test-kitchen
+.kitchen/
+.kitchen.local.yml
+
+VERSION

@@ -2,17 +2,16 @@ version: 2
 
 defaults:
   env_setup: &env_setup
-    working_directory: ~/chef-bashrc_manager
     docker:
-      - image: circleci/ruby:2.4.1
+      - image: circleci/ruby:2.5.0
 
   bundle_cache_name: &bundle_cache_name
-    bundler-cache-v1-{{ checksum "Gemfile.lock" }}
+    bundler-cache-v2-{{ checksum "Gemfile.lock" }}
 
   install_bundle: &install_bundle
     run:
       name: Bundle install
-      command: bundle install --path vendor/bundle
+      command: bundle install --path ~/bundle
 
   restore_bundle: &restore_bundle
     restore_cache:
@@ -28,7 +27,7 @@ jobs:
       - save_cache:
           key: *bundle_cache_name
           paths:
-            - ./vendor/bundle
+            - ~/bundle
 
   test:
     <<: *env_setup
